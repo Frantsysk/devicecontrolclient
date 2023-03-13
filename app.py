@@ -5,11 +5,6 @@ import requests
 import json
 import psutil
 from time import sleep
-import logging
-
-# logger = logging.getLogger()
-#
-# logger.setLevel(logging.DEBUG)
 
 config = configparser.ConfigParser()
 
@@ -53,6 +48,12 @@ def disk_usage():
     return psutil.disk_usage('/').percent
 
 
+def current_ip():
+    url = 'https://api.ipify.org?format=json'
+    responce = requests.get(url)
+    return responce.json()['ip']
+
+
 def main():
     register_system()
     timeout = int(config.get('MAIN', 'timeout'))
@@ -62,7 +63,8 @@ def main():
             'serial': get_serial(),
             "cpu_load": get_cpu_load(),
             "memory_usage": memory_usage(),
-            "disk_usage": disk_usage()
+            "disk_usage": disk_usage(),
+            "ip_address": current_ip()
         }
         requests.post(host + '/info', data=json.dumps(payload))
         print('Request sent')
